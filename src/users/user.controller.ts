@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Put, Delete, Param, Body, HttpCode, ParseIntPipe, NotFoundException } from '@nestjs/common';
 import type { User } from './user.model.js';
-import type { CreateUserDto, UpdateUserDto } from './user.dto.js';
+import { CreateUserDTO, UpdateUserDTO } from './user.dto.js';
 import { UserService } from './user.service.js';
 
 @Controller('users')
@@ -8,7 +8,7 @@ export class UserController {
     constructor(private readonly service: UserService) {}
 
     @Post()
-    createUser(@Body() payload: CreateUserDto): User {
+    createUser(@Body() payload: CreateUserDTO): User {
         return this.service.createUser(payload);
     }
 
@@ -29,7 +29,7 @@ export class UserController {
     }
 
     @Put(':id')
-    updateUser(@Param('id', ParseIntPipe) id: number, @Body() payload: UpdateUserDto): User {
+    updateUser(@Param('id', ParseIntPipe) id: number, @Body() payload: UpdateUserDTO): User {
         const user = this.service.updateUser(id, payload);
 
         if (user === null) {

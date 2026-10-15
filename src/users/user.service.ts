@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { User } from './user.model.js';
 import { USERS_SEED } from './user.seed.js';
-import { CreateUserDto, UpdateUserDto } from './user.dto.js';
+import { CreateUserDTO, UpdateUserDTO } from './user.dto.js';
 
 @Injectable()
 export class UserService {
@@ -27,7 +27,7 @@ export class UserService {
         return true;
     }
 
-    createUser(payload: CreateUserDto): User {
+    createUser(payload: CreateUserDTO): User {
         const user: User = {
             id: ++this.idCounter,
             firstName: payload.firstName,
@@ -42,7 +42,7 @@ export class UserService {
         return user;
     }
 
-    updateUser(id: number, payload: UpdateUserDto): User | null {
+    updateUser(id: number, payload: UpdateUserDTO): User | null {
         const user = this.getUserById(id);
 
         if (user === null) return null;
@@ -57,11 +57,12 @@ export class UserService {
             user.email = payload.email;
         }
         if (payload.role !== undefined) {
-            user.role !== payload.role;
+            user.role = payload.role;
         }
         if (payload.status !== undefined) {
             user.status = payload.status;
         }
+        user.updatedAt = new Date();
 
         return user;
     }
