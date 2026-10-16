@@ -1,69 +1,85 @@
 import { Injectable } from '@nestjs/common';
-import { User } from './user.model.js';
-import { USERS_SEED } from './user.seed.js';
+import { User, UserRole, UserStatus } from '../generated/prisma/client.js';
 import { CreateUserDTO, UpdateUserDTO } from './user.dto.js';
+import { PrismaService, isPrismaError } from '../prisma/prisma.service.js';
+import { EmailAlreadyExistsError } from './user.error.js';
 
 @Injectable()
 export class UserService {
-    private users: User[] = USERS_SEED.map(user => ({...user}));
-    private idCounter = Math.max(0, ...this.users.map(u => u.id));
+    constructor(private readonly prisma: PrismaService) {}
 
-    getUserList(): User[] {
-        return this.users.map(u => ({...u, createdAt: new Date(u.createdAt), updatedAt: new Date(u.updatedAt)}));
+    async getUserList(): Promise<User[]> {
+        return await this.prisma.user.findMany();
     }
 
-    getUserById(id: number): User | null {
-        return this.users.find(u => u.id === id) ?? null;
+    async getUserById(id: number): Promise<User | null> {
+        return await this.prisma.user.findUnique({
+            where: {
+                id,
+            },
+        });
     }
 
-    deleteUser(id: number): boolean {
-        const i = this.users.findIndex(user => user.id === id);
+    async deleteUser(id: number): Promise<boolean> {
+        const res = await this.prisma.user.deleteMany({
+            where: {
+                id,
+            }
+        });
+        return res.count > 0;
+    }
 
-        if (i === -1) {
-            return false;
+    async createUser(payload: CreateUserDTO): Promise<User> {
+        try {
+            return await this.prisma.user.create({
+                data: {
+                    firstName: payload.firstName,
+                    lastName: payload.lastName,
+                    email: payload.email,
+                    role: payload.role.toUpperCase() as UserRole,
+                    status: 'ACTIVE',
+                }
+            });
+        } catch (e) {
+            if (isPrismaError(e, 'P2002')) {
+                throw new EmailAlreadyExistsError(payload.email);
+            }
+            throw e;
         }
-
-        this.users.splice(i, 1);
-        return true;
     }
 
-    createUser(payload: CreateUserDTO): User {
-        const user: User = {
-            id: ++this.idCounter,
-            firstName: payload.firstName,
-            lastName: payload.lastName,
-            email: payload.email,
-            role: payload.role,
-            status: 'active',
-            createdAt: new Date(),
-            updatedAt: new Date()
-        }
-        this.users.push(user);
-        return user;
-    }
-
-    updateUser(id: number, payload: UpdateUserDTO): User | null {
-        const user = this.getUserById(id);
+    async updateUser(id: number, payload: UpdateUserDTO): Promise<User | null> {
+        const user = await this.getUserById(id);
 
         if (user === null) return null;
-
-        if (payload.firstName !== undefined) {
-            user.firstName = payload.firstName;
+        try {
+            return await this.prisma.user.update({
+                where: {
+                    id,
+                },
+                data: {
+                    ...(payload.firstName !== undefined && {
+                        firstName: payload.firstName,
+                    }),
+                    ...(payload.lastName !== undefined && {
+                        lastName: payload.lastName,
+                    }),
+                    ...(payload.email !== undefined && {
+                        email: payload.email,
+                    }),
+                    ...(payload.role !== undefined && {
+                        role: payload.role.toUpperCase() as UserRole,
+                    }),
+                    ...(payload.status !== undefined && {
+                        status: payload.status.toUpperCase() as UserStatus,
+                    })
+                }
+            });
+        } catch (e) {
+             if (payload.email && isPrismaError(e, 'P2002')) {
+                throw new EmailAlreadyExistsError(payload.email);
+            }
+            throw e;
         }
-        if (payload.lastName !== undefined) {
-            user.lastName = payload.lastName;
-        }
-        if (payload.email !== undefined) {
-            user.email = payload.email;
-        }
-        if (payload.role !== undefined) {
-            user.role = payload.role;
-        }
-        if (payload.status !== undefined) {
-            user.status = payload.status;
-        }
-        user.updatedAt = new Date();
-
-        return user;
     }
 }

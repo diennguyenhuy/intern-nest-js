@@ -3,6 +3,8 @@ import { createObserveModule } from '@nestjs/observe';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { UserModule } from './users/user.module.js';
+import { ConfigModule } from '@nestjs/config';
+import { PrismaModule } from './prisma/prisma.module.js';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
@@ -15,7 +17,9 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
       appSecret: 'YOUR_APP_SECRET',
       serviceId: 'my-intern-app',
     }),
-    UserModule
+    UserModule,
+    ConfigModule.forRoot({ isGlobal: true }),
+    PrismaModule,
   ],
   controllers: [AppController],
   providers: [AppService],

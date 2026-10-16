@@ -1,3 +1,4 @@
+/** @deprecated use Prisma Model instead */
 export interface User {
     readonly id: number,
     firstName: string,
