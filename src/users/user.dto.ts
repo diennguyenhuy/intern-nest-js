@@ -1,5 +1,5 @@
-import type { User } from "./user.model.js";
-
+import { type UserRole, type User, type UserStatus } from "../generated/prisma/client.js";
+import { UserRole as USER_ROLE, UserStatus as USER_STATUS } from "../generated/prisma/client.js";
 import { IsEmail, IsIn, IsString, Length, IsOptional } from 'class-validator';
 
 type CreateUserDto = Omit<User, 'id' | 'createdAt' | 'updatedAt' | 'status'>
@@ -18,8 +18,8 @@ export class CreateUserDTO implements CreateUserDto {
     @IsEmail()
     email!: string;
 
-    @IsIn(['user', 'admin'])
-    role!: 'user' | 'admin';
+    @IsIn((Object.values(USER_ROLE) as string[]).concat(Object.values(USER_ROLE).map(r => r.toLowerCase())))
+    role!: UserRole;
 }
 
 export class UpdateUserDTO implements UpdateUserDto {
@@ -38,10 +38,10 @@ export class UpdateUserDTO implements UpdateUserDto {
     email?: string;
 
     @IsOptional()
-    @IsIn(['user', 'admin'])
-    role?: 'user' | 'admin';
+    @IsIn(Object.values(USER_ROLE))
+    role?: UserRole;
 
     @IsOptional()
-    @IsIn(['active', 'suspended', 'deleted'])
-    status?: 'active' | 'suspended' | 'deleted';
+    @IsIn((Object.values(USER_STATUS) as string[]).concat(Object.values(USER_STATUS).map(s => s.toLowerCase())))
+    status?: UserStatus;
 }

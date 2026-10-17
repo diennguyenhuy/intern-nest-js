@@ -1,6 +1,6 @@
-
 import { User } from './user.model.js';
 
+/** @deprecated use database instead */
 export const USERS_SEED: User[] = [
   {
     id: 1,
