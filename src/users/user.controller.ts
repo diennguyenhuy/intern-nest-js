@@ -1,7 +1,6 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, HttpCode, ParseIntPipe, NotFoundException } from '@nestjs/common';
-import type { User } from '../generated/prisma/client.js';
-import { CreateUserDTO, UpdateUserDTO } from './user.dto.js';
-import { UserService } from './user.service.js';
+import { Controller, Get, Post, Put, Delete, Param, Body, HttpCode, ParseIntPipe, NotFoundException, Patch } from '@nestjs/common';
+import { CreateUserDTO, UpdatePasswordDTO, UpdateUserDTO } from './user.dto.js';
+import { UserService, type User } from './user.service.js';
 
 @Controller('users')
 export class UserController {
@@ -45,5 +44,14 @@ export class UserController {
         if (! await this.service.deleteUser(id)) {
             throw new NotFoundException(`User with ID ${id} is not found`);
         }
+    }
+
+    @Patch(':id/password')
+    async updateUserPassword(@Param('id', ParseIntPipe) id: number, @Body() payload: UpdatePasswordDTO): Promise<{ message: string }> {
+        const updated = await this.service.updateUserPassword(id, payload.password);
+        if (!updated) {
+            throw new NotFoundException(`User with ID ${id} is not found`); 
+        }
+        return { message: `Password updated successfully for user ${id}` };
     }
 }

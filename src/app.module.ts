@@ -6,6 +6,8 @@ import { UserModule } from './users/user.module.js';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { RequestLoggingMiddleware } from './common/middleware/request-logging.middleware.js';
+import { ProfilesModule } from './profiles/profiles.module.js';
+import { PostsModule } from './posts/posts.module.js';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
@@ -21,6 +23,8 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     UserModule,
     ConfigModule.forRoot({ isGlobal: true }),
     PrismaModule,
+    ProfilesModule,
+    PostsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
