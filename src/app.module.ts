@@ -8,6 +8,7 @@ import { PrismaModule } from './prisma/prisma.module.js';
 import { RequestLoggingMiddleware } from './common/middleware/request-logging.middleware.js';
 import { ProfilesModule } from './profiles/profiles.module.js';
 import { PostsModule } from './posts/posts.module.js';
+import { AuthModule } from './auth/auth.module.js';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
@@ -25,6 +26,7 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     PrismaModule,
     ProfilesModule,
     PostsModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
