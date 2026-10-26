@@ -20,3 +20,13 @@ export class RegisterDTO {
     @MaxLength(72)
     password: string;
 }
+
+export class LoginDTO {
+    @IsEmail()
+    @MaxLength(254)
+    email: string;
+
+    @IsString()
+    @IsNotEmpty()
+    password: string;
+}
