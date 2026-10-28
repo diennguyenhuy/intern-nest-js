@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, HttpCode, ParseIntPipe, NotFoundException, Patch } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, HttpCode, ParseIntPipe, NotFoundException, Patch, UseGuards } from '@nestjs/common';
 import { CreateUserDTO, UpdatePasswordDTO, UpdateUserDTO } from './user.dto.js';
 import { UserService, type User } from './user.service.js';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 
 @Controller('users')
 export class UserController {
@@ -29,6 +30,7 @@ export class UserController {
     }
 
     @Put(':id')
+    @UseGuards(JwtAuthGuard)
     async updateUser(@Param('id', ParseIntPipe) id: number, @Body() payload: UpdateUserDTO): Promise<User> {
         const user = await this.service.updateUser(id, payload);
 
@@ -40,6 +42,7 @@ export class UserController {
 
     @Delete(':id')
     @HttpCode(204)
+    @UseGuards(JwtAuthGuard)
     async deleteUser(@Param('id', ParseIntPipe) id: number) {
         if (! await this.service.deleteUser(id)) {
             throw new NotFoundException(`User with ID ${id} is not found`);
@@ -47,6 +50,7 @@ export class UserController {
     }
 
     @Patch(':id/password')
+    @UseGuards(JwtAuthGuard)
     async updateUserPassword(@Param('id', ParseIntPipe) id: number, @Body() payload: UpdatePasswordDTO): Promise<{ message: string }> {
         const updated = await this.service.updateUserPassword(id, payload.password);
         if (!updated) {

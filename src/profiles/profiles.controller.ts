@@ -1,6 +1,7 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, ParseIntPipe, Patch, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, NotFoundException, Param, ParseIntPipe, Patch, Put, UseGuards } from '@nestjs/common';
 import { ProfilesService } from './profiles.service.js';
 import { CreateProfileDTO, UpdateProfileDTO } from './profiles.dto.js';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 
 @Controller('users')
 export class ProfilesController {
@@ -16,6 +17,7 @@ export class ProfilesController {
     }
 
     @Delete(':userId/profile')
+    @UseGuards(JwtAuthGuard)
     async deleteUserProfile(@Param('userId', ParseIntPipe) userId: number) {
         if (! await this.service.deleteProfile(userId)) {
             throw new NotFoundException(`User ${userId} has no profile`);
@@ -23,11 +25,13 @@ export class ProfilesController {
     }
 
     @Put(':userId/profile')
+    @UseGuards(JwtAuthGuard)
     async createOrReplaceUserProfile(@Param('userId', ParseIntPipe) userId: number, @Body() payload: CreateProfileDTO) {
         return await this.service.createOrReplaceProfile(userId, payload);
     }
 
     @Patch(':userId/profile')
+    @UseGuards(JwtAuthGuard)
     async updateUserProfile(@Param('userId', ParseIntPipe) userId: number, @Body() payload: UpdateProfileDTO) {
         const prof = await this.service.updateProfile(userId, payload);
         if (prof === null) {
