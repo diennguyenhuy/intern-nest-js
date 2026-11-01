@@ -4,9 +4,10 @@ import { EmailAlreadyExistsFilter } from "./user.error.js";
 import { UserController } from "./user.controller.js";
 import { UserService } from "./user.service.js";
 import { PrismaModule } from "../prisma/prisma.module.js";
+import { AuthModule } from "../auth/auth.module.js";
 
 @Module({
-    imports: [PrismaModule],
+    imports: [PrismaModule, AuthModule],
     controllers: [UserController],
     providers: [
         UserService, 
