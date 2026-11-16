@@ -1,5 +1,6 @@
 import { IsOptional, IsString, IsUrl, ValidateIf } from "class-validator";
 import type { Profile } from "../generated/prisma/client.js";
+import { ApiProperty } from "@nestjs/swagger";
 
 type CreateProfileDto = Pick<Profile, 'bio' | 'avatar'>;
 type UpdateProfileDto = Partial<CreateProfileDto>;
@@ -24,4 +25,15 @@ export class UpdateProfileDTO implements UpdateProfileDto {
     @IsUrl()
     @IsOptional()
     avatar?: string | null;
+}
+
+export class ProfileResponseDTO {
+    @ApiProperty()
+    id: number;
+    @ApiProperty()
+    userId: number;
+    @ApiProperty()
+    bio: string | null;
+    @ApiProperty()
+    avatar: string | null;
 }

@@ -1,4 +1,6 @@
+import { ApiProperty } from "@nestjs/swagger";
 import { IsEmail, IsNotEmpty, IsString, MaxLength, MinLength } from "class-validator";
+import { UserRole as USER_ROLE, UserRole, UserStatus, UserStatus as USER_STATUS } from "../generated/prisma/client.js";
 
 export class RegisterDTO {
     @IsString()
@@ -29,4 +31,57 @@ export class LoginDTO {
     @IsString()
     @IsNotEmpty()
     password: string;
+}
+
+export class UserResponseDTO {
+    @ApiProperty()
+    userId: number;
+
+    @ApiProperty()
+    email: string;
+
+    @ApiProperty({
+        enum: Object.values(USER_ROLE)
+    })
+    role: UserRole;
+}
+
+export class RegisterResponseDTO {
+    @ApiProperty()
+    firstName: string;
+    @ApiProperty()
+    lastName: string;
+    @ApiProperty()
+    email: string;
+    @ApiProperty({
+        enum: Object.values(USER_ROLE)
+    })
+    role: UserRole;
+    @ApiProperty({
+        enum: Object.values(USER_STATUS)
+    })
+    status: UserStatus;
+    @ApiProperty()
+    createdAt: Date;
+    @ApiProperty()
+    updatedAt: Date;
+    @ApiProperty()
+    id: number;
+}
+
+export class LoginResponseDTO {
+    @ApiProperty()
+    accessToken: string;
+    @ApiProperty()
+    tokenType: string;
+    @ApiProperty()
+    expiresIn: number;
+    @ApiProperty()
+    user: {
+        id: number;
+        firstName: string;
+        lastName: string;
+        email: string;
+        role: UserRole;
+    };
 }
