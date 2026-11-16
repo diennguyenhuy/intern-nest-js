@@ -1,3 +1,4 @@
+import { ApiProperty } from "@nestjs/swagger";
 import type { Post } from "../generated/prisma/client.js";
 import { IsOptional, IsPositive, IsString, Length, MinLength } from 'class-validator';
 
@@ -25,4 +26,15 @@ export class UpdatePostDTO implements UpdatePostDto {
     @IsString()
     @MinLength(1)
     content?: string;
+}
+
+export class PostResponseDTO {
+    @ApiProperty()
+    id: number;
+    @ApiProperty()
+    title: string;
+    @ApiProperty()
+    content: string;
+    @ApiProperty()
+    userId: number;
 }

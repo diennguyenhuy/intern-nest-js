@@ -1,3 +1,4 @@
+import { ApiExtraModels, ApiProperty } from "@nestjs/swagger";
 import type { UserRole, User, UserStatus } from "../generated/prisma/client.js";
 import { UserRole as USER_ROLE, UserStatus as USER_STATUS } from "../generated/prisma/client.js";
 import { IsEmail, IsIn, IsString, Length, IsOptional, MinLength, MaxLength } from 'class-validator';
@@ -56,4 +57,27 @@ export class UpdatePasswordDTO implements Pick<User, 'password'> {
     @MinLength(8)
     @MaxLength(72)
     password!: string;
+}
+
+export class UserResponseDTO {
+    @ApiProperty()
+    id: number;
+    @ApiProperty()
+    firstName: string;
+    @ApiProperty()
+    lastName: string;
+    @ApiProperty()
+    email: string;
+    @ApiProperty({
+        enum: Object.values(USER_ROLE)
+    })
+    role: UserRole;
+    @ApiProperty({
+        enum: Object.values(USER_STATUS)
+    })
+    status: UserStatus;
+    @ApiProperty()
+    createdAt: Date;
+    @ApiProperty()
+    updatedAt: Date;
 }
