@@ -9,6 +9,7 @@ import { RequestLoggingMiddleware } from './common/middleware/request-logging.mi
 import { ProfilesModule } from './profiles/profiles.module.js';
 import { PostsModule } from './posts/posts.module.js';
 import { AuthModule } from './auth/auth.module.js';
+import Joi from 'joi';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
@@ -22,7 +23,20 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
       serviceId: 'my-intern-app',
     }),
     UserModule,
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({ 
+      isGlobal: true,
+      validationSchema: Joi.object({
+        PORT: Joi.number().port().default(3000),
+        DATABASE_URL: Joi.string().uri({
+          scheme: ['postgresql', 'postgres'],
+        }).required(),
+        JWT_SECRET: Joi.string().min(32).required(),
+      }),
+      validationOptions: {
+          abortEarly: false,
+          allowUnknown: true,
+      } as Record<string, unknown>,
+    }),
     PrismaModule,
     ProfilesModule,
     PostsModule,
