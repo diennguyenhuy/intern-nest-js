@@ -9,6 +9,7 @@ import { RequestLoggingMiddleware } from './common/middleware/request-logging.mi
 import { ProfilesModule } from './profiles/profiles.module.js';
 import { PostsModule } from './posts/posts.module.js';
 import { AuthModule } from './auth/auth.module.js';
+import { MicroserviceClientModule } from './microservice-client/microservice-client.module.js';
 import Joi from 'joi';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
@@ -41,6 +42,7 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     ProfilesModule,
     PostsModule,
     AuthModule,
+    MicroserviceClientModule,
   ],
   controllers: [AppController],
   providers: [AppService],
